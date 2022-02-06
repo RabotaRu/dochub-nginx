@@ -8,27 +8,14 @@ services:
       - ./40-sed.sh:/docker-entrypoint.d/40-sed.sh
       - ./dist:/usr/share/nginx/html
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    env_file:
-      - scratch.env
+    environment:
+      VUE_APP_PLANTUML_SERVER: localhost:8079/svg/
     ports:
       - "8080:8080"
-#  nginx:
-#    container_name: dochub
-#    image: dochub-nginx
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#      target: nginx
-#    volumes:
-#      - ./40-sed.sh:/docker-entrypoint.d/40-sed.sh
-#    env_file:
-#      - scratch.env
-#    ports:
-#      - "8080:8080"
 
 
-#  plantuml:
-#    image: ghcr.io/rabotaru/dochub/plantuml:v0.0.2
-#    container_name: plantuml
-#    ports:
-#      - "8079:8080"
+ plantuml:
+   image: ghcr.io/rabotaru/dochub/plantuml:v0.0.2
+   container_name: plantuml
+   ports:
+     - "8079:8080"
