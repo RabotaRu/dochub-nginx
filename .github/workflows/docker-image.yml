@@ -1,0 +1,38 @@
+name: build dochub nginx
+on:
+  push:
+    tags:
+    - v*
+
+jobs:
+  buildx:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Get git tag
+      id: vars
+      run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+    - run: |
+        wget -L https://raw.githubusercontent.com/RabotaRu/DocHub/archops-conception-v2/example.env
+        cat example.env | grep ^VUE_APP | awk -F'=' '{print $1 "=" $1}' > .env
+
+
+    - id: buildx
+      uses: docker/setup-buildx-action@v1
+      with:
+        config-inline: |
+          [registry."docker.io"]
+            mirrors = ["mirror.gcr.io"]
+    - name: Login to ghrc.io
+      uses: docker/login-action@v1
+      with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build and push
+      id: docker_build
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        target: nginx
+        tags: "ghcr.io/rabotaru/dochub/nginx:${{ steps.vars.outputs.tag }}"
